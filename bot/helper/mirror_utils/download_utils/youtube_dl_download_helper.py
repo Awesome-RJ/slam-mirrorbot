@@ -108,10 +108,7 @@ class YoutubeDLHelper(DownloadHelper):
         with YoutubeDL(self.opts) as ydl:
             try:
                 result = ydl.extract_info(link, download=False)
-                if name == "":
-                    name = ydl.prepare_filename(result)
-                else:
-                    name = name
+                name = ydl.prepare_filename(result) if name == "" else name
                 # noobway hack for changing extension after converting to mp3
                 if qual == "audio":
                   name = name.replace(".mp4", ".mp3").replace(".webm", ".mp3")
@@ -163,10 +160,12 @@ class YoutubeDLHelper(DownloadHelper):
           self.opts['postprocessors'] = [{'key': 'FFmpegExtractAudio','preferredcodec': 'mp3','preferredquality': '320',}]
         else:
           self.opts['format'] = qual
-        if not self.is_playlist:
-            self.opts['outtmpl'] = f"{path}/{self.name}"
-        else:
-            self.opts['outtmpl'] = f"{path}/{self.name}/%(title)s.%(ext)s"
+        self.opts['outtmpl'] = (
+            f"{path}/{self.name}/%(title)s.%(ext)s"
+            if self.is_playlist
+            else f"{path}/{self.name}"
+        )
+
         self.__download(link)
 
     def cancel_download(self):
