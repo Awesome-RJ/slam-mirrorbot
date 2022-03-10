@@ -59,8 +59,13 @@ Type /{BotCommands.HelpCommand} to get a list of available commands
             sendMessage(f"Hey I'm Alive 🙂\nSince: <code>{uptime}</code>", context.bot, update)
         else :
             sendMarkup(start_string, context.bot, update, reply_markup)
-    else :
-        sendMarkup(f"Oops! not a Authorized user.\nPlease deploy your own <b>slam-mirrorbot</b>.", context.bot, update, reply_markup)
+    else:
+        sendMarkup(
+            "Oops! not a Authorized user.\\nPlease deploy your own <b>slam-mirrorbot</b>.",
+            context.bot,
+            update,
+            reply_markup,
+        )
 
 
 def restart(update, context):

@@ -73,18 +73,21 @@ class qbittorrent:
             self.updater = setInterval(self.update_interval, self.update)
             tor_info = tor_info[0]
             if BASE_URL is not None and qbitsel:
-                if not is_file and (tor_info.state == "checkingResumeData" or tor_info.state == "metaDL"):
+                if not is_file and tor_info.state in [
+                    "checkingResumeData",
+                    "metaDL",
+                ]:
                     meta = sendMessage("Downloading Metadata...Please wait then you can select files or mirror torrent file if it have low seeders", listener.bot, listener.update)
                     while True:
-                            tor_info = self.client.torrents_info(torrent_hashes=self.ext_hash)
-                            if len(tor_info) == 0:
-                                deleteMessage(listener.bot, meta)
-                                return False
-                            tor_info = tor_info[0]
-                            if tor_info.state == "metaDL" or tor_info.state == "checkingResumeData":
-                                time.sleep(1)
-                            else:
-                                break  
+                        tor_info = self.client.torrents_info(torrent_hashes=self.ext_hash)
+                        if len(tor_info) == 0:
+                            deleteMessage(listener.bot, meta)
+                            return False
+                        tor_info = tor_info[0]
+                        if tor_info.state in ["metaDL", "checkingResumeData"]:
+                            time.sleep(1)
+                        else:
+                            break
                     deleteMessage(listener.bot, meta)
                 for n in str(self.ext_hash):
                     if n.isdigit():
@@ -171,11 +174,11 @@ def get_hash_magnet(mgt):
 
     qs = parse_qs(query)
     v = qs.get('xt', None)
-    
-    if v == None or v == []:
+
+    if v is None or v == []:
         LOGGER.error('Invalid magnet URI: no "xt" query parameter.')
         return False
-        
+
     v = v[0]
     if not v.startswith('urn:btih:'):
         LOGGER.error('Invalid magnet URI: "xt" value not valid for BitTorrent.')
